@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Domaines Tiers Tracker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Domaines Tiers</h1>
+    <div class="header-actions">
+      <button id="saveHistoryBtn" class="header-btn" title="Sauvegarder ce site dans l'historique">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          <polyline points="7 3 7 8 15 8"></polyline>
+        </svg>
+      </button>
+      <button id="viewHistoryBtn" class="header-btn" title="Voir l'historique">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </button>
+    </div>
+    <div id="mainDomain" class="info-box">
+      <strong>Domaine principal:</strong> <span id="mainDomainValue">-</span>
+    </div>
+    
+    <div class="stats-container">
+      <div class="stat-box">
+        <div class="stat-value" id="domainsCount">0</div>
+        <div class="stat-label">Domaines</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="requestsCount">0</div>
+        <div class="stat-label">Requêtes</div>
+      </div>
+    </div>
+    
+    <h2>Types de requêtes</h2>
+    <div id="requestTypes" class="request-types">
+      <div class="type-bar">
+        <span class="type-label">XHR:</span>
+        <div class="progress-container">
+          <div id="xhr-bar" class="progress-bar" style="width: 0%;"></div>
+          <span id="xhr-count" class="count">0</span>
+        </div>
+      </div>
+      <div class="type-bar">
+        <span class="type-label">Scripts:</span>
+        <div class="progress-container">
+          <div id="script-bar" class="progress-bar" style="width: 0%;"></div>
+          <span id="script-count" class="count">0</span>
+        </div>
+      </div>
+      <div class="type-bar">
+        <span class="type-label">CSS:</span>
+        <div class="progress-container">
+          <div id="css-bar" class="progress-bar" style="width: 0%;"></div>
+          <span id="css-count" class="count">0</span>
+        </div>
+      </div>
+      <div class="type-bar">
+        <span class="type-label">Images:</span>
+        <div class="progress-container">
+          <div id="image-bar" class="progress-bar" style="width: 0%;"></div>
+          <span id="image-count" class="count">0</span>
+        </div>
+      </div>
+      <div class="type-bar">
+        <span class="type-label">Média:</span>
+        <div class="progress-container">
+          <div id="media-bar" class="progress-bar" style="width: 0%;"></div>
+          <span id="media-count" class="count">0</span>
+        </div>
+      </div>
+      <div class="type-bar">
+        <span class="type-label">Fonts:</span>
+        <div class="progress-container">
+          <div id="font-bar" class="progress-bar" style="width: 0%;"></div>
+          <span id="font-count" class="count">0</span>
+        </div>
+      </div>
+      <div class="type-bar">
+        <span class="type-label">Autres:</span>
+        <div class="progress-container">
+          <div id="other-bar" class="progress-bar" style="width: 0%;"></div>
+          <span id="other-count" class="count">0</span>
+        </div>
+      </div>
+    </div>
+    
+    <h2>Domaines Tiers (<span id="thirdPartyCount">0</span>)</h2>
+    <div id="domainList" class="domain-list"></div>
+    
+    <!-- Container pour les requêtes détaillées -->
+    <div id="requestsContainer" class="requests-container">
+      <div id="requestsList"></div>
+    </div>
+  </div>
+  <script src="browser-polyfill.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

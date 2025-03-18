@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Historique des Sites - Domaines Tiers Tracker</title>
+  <link rel="stylesheet" href="history.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Historique des Sites Visités</h1>
+      <div class="actions">
+        <button id="exportButton" class="btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Exporter
+        </button>
+        <button id="clearButton" class="btn btn-danger">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Effacer l'historique
+        </button>
+      </div>
+    </div>
+    
+    <div class="filters">
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Rechercher un site...">
+      </div>
+      <div class="sort-container">
+        <label for="sortSelect">Trier par:</label>
+        <select id="sortSelect">
+          <option value="time-desc">Date (plus récent)</option>
+          <option value="time-asc">Date (plus ancien)</option>
+          <option value="domain-asc">Domaine (A-Z)</option>
+          <option value="domain-desc">Domaine (Z-A)</option>
+          <option value="third-party-desc">Domaines tiers (décroissant)</option>
+          <option value="third-party-asc">Domaines tiers (croissant)</option>
+          <option value="requests-desc">Requêtes (décroissant)</option>
+          <option value="requests-asc">Requêtes (croissant)</option>
+        </select>
+      </div>
+      <div class="filter-options">
+        <div class="filter-container">
+          <label for="groupVisitsCheckbox">
+            <input type="checkbox" id="groupVisitsCheckbox">
+            Regrouper les visites multiples
+          </label>
+        </div>
+        <div class="period-dropdown">
+          <button id="periodFilterBtn" class="period-filter-btn">
+            <span id="selectedPeriod">Aujourd'hui</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div id="periodFilterDropdown" class="period-filter-dropdown">
+            <a href="#" id="periodFilterDay" class="active">Aujourd'hui</a>
+            <a href="#" id="periodFilterWeek">Cette semaine</a>
+            <a href="#" id="periodFilterMonth">Ce mois</a>
+            <a href="#" id="periodFilterAllTime">Tout le temps</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Statistiques par période -->
+    <div class="stats-summary">
+        
+      <!-- Statistiques par jour (visible par défaut) -->
+      <div id="statsDay" class="stats-period active">
+        <div class="stats-grid">
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-value" id="totalSitesDay">0</div>
+              <div class="stat-label">Sites visités</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="uniqueDomainsDay">0</div>
+              <div class="stat-label">Domaines uniques</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="totalThirdPartyDomainsDay">0</div>
+              <div class="stat-label">Total domaines tiers contactés</div>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-value" id="avgThirdPartyDay">0</div>
+              <div class="stat-label">Domaines tiers en moyenne</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="totalRequestsDay">0</div>
+              <div class="stat-label">Total requêtes</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="avgRequestsDay">0</div>
+              <div class="stat-label">Requêtes en moyenne</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Statistiques par semaine (caché par défaut) -->
+      <div id="statsWeek" class="stats-period">
+        <div id="dailyStatsContainer" class="daily-stats-container" style="display: none;">
+          <h3>Détail par jour</h3>
+          <div class="table-container">
+            <table id="dailyStatsTable">
+              <thead>
+                <tr>
+                  <th>Jour</th>
+                  <th>Sites visités</th>
+                  <th>Domaines uniques</th>
+                  <th>Domaines tiers</th>
+                  <th>Domaines tiers uniques</th>
+                  <th>Requêtes</th>
+                </tr>
+              </thead>
+              <tbody id="dailyStatsTableBody">
+                <!-- Contenu généré dynamiquement -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-value" id="totalSitesWeek">0</div>
+              <div class="stat-label">Sites visités</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="uniqueDomainsWeek">0</div>
+              <div class="stat-label">Domaines uniques</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="totalThirdPartyDomainsWeek">0</div>
+              <div class="stat-label">Total domaines tiers contactés</div>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-value" id="avgThirdPartyWeek">0</div>
+              <div class="stat-label">Domaines tiers en moyenne</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="totalRequestsWeek">0</div>
+              <div class="stat-label">Total requêtes</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="avgRequestsWeek">0</div>
+              <div class="stat-label">Requêtes en moyenne</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Statistiques par mois (caché par défaut) -->
+      <div id="statsMonth" class="stats-period">
+        <div class="stats-grid">
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-value" id="totalSitesMonth">0</div>
+              <div class="stat-label">Sites visités</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="uniqueDomainsMonth">0</div>
+              <div class="stat-label">Domaines uniques</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="totalThirdPartyDomainsMonth">0</div>
+              <div class="stat-label">Total domaines tiers contactés</div>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-value" id="avgThirdPartyMonth">0</div>
+              <div class="stat-label">Domaines tiers en moyenne</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="totalRequestsMonth">0</div>
+              <div class="stat-label">Total requêtes</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="avgRequestsMonth">0</div>
+              <div class="stat-label">Requêtes en moyenne</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Statistiques tout le temps (caché par défaut) -->
+      <div id="statsAllTime" class="stats-period">
+        <div class="stats-grid">
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-value" id="totalSitesAllTime">0</div>
+              <div class="stat-label">Sites visités</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="uniqueDomainsAllTime">0</div>
+              <div class="stat-label">Domaines uniques</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="totalThirdPartyDomainsAllTime">0</div>
+              <div class="stat-label">Total domaines tiers contactés</div>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-value" id="avgThirdPartyAllTime">0</div>
+              <div class="stat-label">Domaines tiers en moyenne</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="totalRequestsAllTime">0</div>
+              <div class="stat-label">Total requêtes</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="avgRequestsAllTime">0</div>
+              <div class="stat-label">Requêtes en moyenne</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 10 des sites -->
+    <div class="top10-container">
+      <div class="top10-header">
+        <h2>Top 10 des sites par domaines tiers</h2>
+        <div class="top10-tabs">
+          <button id="tabDay" class="top10-tab active">Aujourd'hui</button>
+          <button id="tabWeek" class="top10-tab">Cette semaine</button>
+          <button id="tabMonth" class="top10-tab">Ce mois</button>
+          <button id="tabAllTime" class="top10-tab">Tout le temps</button>
+        </div>
+      </div>
+      
+      <div id="top10Day" class="top10-content active">
+        <div class="top10-empty">Aucune donnée pour cette période</div>
+        <table class="top10-table">
+          <thead>
+            <tr>
+              <th>Rang</th>
+              <th>Site</th>
+              <th>Domaines tiers</th>
+              <th>Requêtes</th>
+            </tr>
+          </thead>
+          <tbody id="top10DayBody">
+            <!-- Contenu généré dynamiquement -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div id="top10Week" class="top10-content">
+        <div class="top10-empty">Aucune donnée pour cette période</div>
+        <table class="top10-table">
+          <thead>
+            <tr>
+              <th>Rang</th>
+              <th>Site</th>
+              <th>Domaines tiers</th>
+              <th>Requêtes</th>
+            </tr>
+          </thead>
+          <tbody id="top10WeekBody">
+            <!-- Contenu généré dynamiquement -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div id="top10Month" class="top10-content">
+        <div class="top10-empty">Aucune donnée pour cette période</div>
+        <table class="top10-table">
+          <thead>
+            <tr>
+              <th>Rang</th>
+              <th>Site</th>
+              <th>Domaines tiers</th>
+              <th>Requêtes</th>
+            </tr>
+          </thead>
+          <tbody id="top10MonthBody">
+            <!-- Contenu généré dynamiquement -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div id="top10AllTime" class="top10-content">
+        <div class="top10-empty">Aucune donnée pour cette période</div>
+        <table class="top10-table">
+          <thead>
+            <tr>
+              <th>Rang</th>
+              <th>Site</th>
+              <th>Domaines tiers</th>
+              <th>Requêtes</th>
+            </tr>
+          </thead>
+          <tbody id="top10AllTimeBody">
+            <!-- Contenu généré dynamiquement -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+ <!-- Tableau des sites visités -->
+        <div class="table-container">
+          <table id="historyTable">
+            <thead>
+              <tr>
+                <th>Site</th>
+                <th>Visité le</th>
+                <th>Domaines tiers</th>
+                <th>Requêtes</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Contenu généré dynamiquement -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination-container">
+            <div class="pagination-info">Affichage de 1-50 sur 100 sites</div>
+            <div class="pagination-pages">
+              <!-- Les boutons de pagination seront générés dynamiquement ici -->
+            </div>
+          </div>
+
+        <div id="emptyState" class="empty-state">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <p>Aucun site dans l'historique</p>
+          <p class="empty-hint">Naviguez sur internet pour collecter des données sur les domaines tiers</p>
+        </div>
+        
+        <!-- Modal pour les détails d'un site -->
+        <div id="detailsModal" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 id="modalTitle">Détails du site</h2>
+              <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+              <div class="site-info">
+                <p><strong>URL:</strong> <span id="modalUrl"></span></p>
+                <p><strong>Visité le:</strong> <span id="modalVisitTime"></span></p>
+                <p><strong>Total domaines tiers:</strong> <span id="modalDomainsCount"></span></p>
+                <p><strong>Total requêtes:</strong> <span id="modalRequestsCount"></span></p>
+              </div>
+              
+              <h3>Domaines tiers contactés</h3>
+              <div class="domains-list" id="modalDomainsList">
+                <!-- Liste des domaines générée dynamiquement -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Modal de confirmation -->
+        <div id="confirmModal" class="modal">
+          <div class="modal-content confirm-modal">
+            <div class="modal-header">
+              <h2>Confirmation</h2>
+              <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+              <p>Êtes-vous sûr de vouloir effacer tout l'historique ?</p>
+              <p class="warning">Cette action est irréversible.</p>
+              <div class="confirm-actions">
+                <button id="cancelClearBtn" class="btn">Annuler</button>
+                <button id="confirmClearBtn" class="btn btn-danger">Effacer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script src="browser-polyfill.js"></script>
+      <script src="history.js"></script>
+    </body>
+    </html>

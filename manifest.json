@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Domaines Tiers Tracker",
+  "version": "1.0.1",
+  "description": "Compte le nombre de domaines tiers contact\u00e9s par le site actuel",
+  "permissions": [
+    "webRequest",
+    "tabs",
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "32": "32.png",
+      "48": "48.png",
+      "64": "64.png",
+      "128": "128.png"
+    }
+  },
+  "background": {
+    "scripts": [
+      "browser-polyfill.js",
+      "background.js"
+    ]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "sebastien@gavois.fr",
+      "strict_min_version": "109.0"
+    }
+  }
+}
